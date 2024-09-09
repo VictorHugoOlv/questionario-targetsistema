@@ -1,11 +1,6 @@
-﻿using System.Runtime.Intrinsics.X86;
-using System.Text.Json;
-using System.Collections.Generic;
-using System.Linq;
-using QuestionarioTargetSistemas;
-using System.Drawing;
-
-
+﻿using QuestionarioTargetSistemas;
+using System.Globalization;
+using System.Net.Http.Headers;
 
 ///*1) Observe o trecho de código abaixo: int INDICE = 13, SOMA = 0, K = 0;
 //Enquanto K < INDICE faça { K = K + 1; SOMA = SOMA + K; }
@@ -17,7 +12,7 @@ int INDICE = 13, SOMA = 0, K = 0;
 
 while (K < INDICE)
 {
-    K = K + 1; 
+    K = K + 1;
     SOMA = SOMA + K;
 }
 Console.WriteLine(SOMA);
@@ -56,28 +51,36 @@ Console.WriteLine(" ");
 //b) Podem existir dias sem faturamento, como nos finais de semana e feriados. Estes dias devem ser ignorados no cálculo da média;*/
 Console.WriteLine("3º Questão");
 
-
 var faturamento = new Faturamento();
-List<Registro> faturamentos = faturamento.ObterLancamentos();
+var cultura = new CultureInfo("pt-BR");
 
-    // Filtrar dias com faturamento maior que zero
-var diasComFaturamento = faturamentos.Where(f => f.valor > 0).ToList();
+Console.WriteLine($"Todas as Vendas:");
+faturamento.TodasVendas?
+    .ForEach(x => Console.WriteLine($"Dia: {x.Dia} Valor: {x.Valor.ToString("C", cultura)}"));
+Console.WriteLine();
 
-    // Encontrar o menor e o maior valor de faturamento
-double menorValor = diasComFaturamento.Min(f => f.valor);
-double maiorValor = diasComFaturamento.Max(f => f.valor);
+Console.WriteLine("Menor Faturamento:");
+Console.WriteLine($"Dia: {faturamento.MenorFaturamento?.Dia} Valor: {faturamento.MenorFaturamento?.Valor.ToString("C", cultura)}");
+Console.WriteLine();
 
-    // Calcular a média dos dias com faturamento
-double mediaMensal = diasComFaturamento.Average(f => f.valor);
+Console.WriteLine("Maior Faturamento:");
+Console.WriteLine($"Dia: {faturamento.MaiorFaturamento?.Dia} Valor: {faturamento.MaiorFaturamento?.Valor.ToString("C", cultura)}");
+Console.WriteLine();
 
-    // Contar os dias em que o faturamento foi superior à média mensal
-int diasAcimaDaMedia = diasComFaturamento.Count(f => f.valor > mediaMensal);
+Console.WriteLine("Media de faturamento no mês:");
+Console.WriteLine($"{faturamento.MediaFaturamentos?.ToString("C", cultura)}");
+Console.WriteLine();
 
-    // Exibir os resultados
-Console.WriteLine($"Menor valor de faturamento: {menorValor}");
-Console.WriteLine($"Maior valor de faturamento: {maiorValor}");
-Console.WriteLine($"Número de dias com faturamento acima da média: {diasAcimaDaMedia}");
-Console.WriteLine(" ");
+Console.WriteLine("Vendas acima da média mensal:");
+Console.WriteLine($"Existem {faturamento.QuantidadeVendasSuperiorMediaMes} vendas acima da média do mês!");
+Console.WriteLine();
+
+faturamento.VendasSuperiorMediaMes?
+    .OrderBy(x => x.Valor)
+    .ToList()
+    .ForEach(x => Console.WriteLine($"Dia: {x.Dia} Valor: {x.Valor.ToString("C", cultura)}"));
+
+
 
 
 ///*4) Dado o valor de faturamento mensal de uma distribuidora, detalhado por estado:
@@ -103,7 +106,7 @@ ObterPorcentagem(MG, TotalMensal, "MG");
 ObterPorcentagem(ES, TotalMensal, "ES");
 ObterPorcentagem(Outros, TotalMensal, "Outros");
 
-static void ObterPorcentagem(double valor, double total, string estado )
+static void ObterPorcentagem(double valor, double total, string estado)
 {
     double percentual = (valor / total) * 100;
     Console.WriteLine($"{estado}: {percentual:F2}%");

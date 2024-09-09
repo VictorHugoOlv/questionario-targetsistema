@@ -1,34 +1,52 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 
 namespace QuestionarioTargetSistemas;
 
-[JsonSerializable(typeof(List<Registro>))]
-public partial class MyJsonContext : JsonSerializerContext
+[JsonSerializable(typeof(List<Venda>))]
+public partial class DadosVendas : JsonSerializerContext
 { }
 
 public class Faturamento
 {
-    private List<Registro> _lacamentos;
+    public List<Venda>? TodasVendas { get; private set; }
+        = [];
+
+    public List<Venda>? VendasDiasUteis
+        => TodasVendas?.Where(x => x.Valor > 0).ToList() ?? [];
+
+    public Venda? MenorFaturamento
+        => VendasDiasUteis?.First(x => x.Valor == VendasDiasUteis?.Min(x => x.Valor));
+
+    public Venda? MaiorFaturamento
+        => VendasDiasUteis?.First(x => x.Valor == VendasDiasUteis?.Max(x => x.Valor));
+
+    public decimal? MediaFaturamentos
+        => VendasDiasUteis?.Average(x => x.Valor);
+
+    public int? QuantidadeVendasSuperiorMediaMes
+        => VendasDiasUteis?.Count(x => x.Valor > MediaFaturamentos);
+
+    public List<Venda>? VendasSuperiorMediaMes
+        => VendasDiasUteis?.Where(x => x.Valor > MediaFaturamentos).ToList() ?? [];
 
     public Faturamento()
     {
-        _lacamentos = new List<Registro>();
-        ObterLancamentos();
+        ObterVendas();
     }
-    public List<Registro> ObterLancamentos()
+
+    private void ObterVendas()
     {
-        var jsonLancamentos = File.ReadAllText("C:\\repo\\QuestionarioTargetSistemas\\QuestionarioTargetSistemas\\lancamentos.json");
-
-        _lacamentos = JsonSerializer.Deserialize<List<Registro>>(jsonLancamentos, MyJsonContext.Default.ListRegistro);      
-
-        return _lacamentos.ToList();    
+        var jsonVendas = File.ReadAllText($@"{AppContext.BaseDirectory}\vendas.json");
+        TodasVendas = JsonSerializer.Deserialize(jsonVendas, DadosVendas.Default.ListVenda);
     }
 }
 
-public class Registro
+public class Venda
 {
-    public int dia { get; set; }
-    public double valor { get; set; }
+    [JsonPropertyName("dia")]
+    public int Dia { get; set; }
+
+    [JsonPropertyName("valor")]
+    public decimal Valor { get; set; }
 }
