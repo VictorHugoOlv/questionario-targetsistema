@@ -1,6 +1,7 @@
 ﻿using QuestionarioTargetSistemas;
 using System.Globalization;
 using System.Net.Http.Headers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 ///*1) Observe o trecho de código abaixo: int INDICE = 13, SOMA = 0, K = 0;
 //Enquanto K < INDICE faça { K = K + 1; SOMA = SOMA + K; }
@@ -12,36 +13,33 @@ int INDICE = 13, SOMA = 0, K = 0;
 
 while (K < INDICE)
 {
-    K = K + 1;
-    SOMA = SOMA + K;
+    K++;
+    SOMA += K;
 }
-Console.WriteLine(SOMA);
-Console.WriteLine(" ");
+Console.WriteLine($"O resultado da soma é {SOMA}");
+Console.WriteLine();
 
-///*2) Dado a sequência de Fibonacci, onde se inicia por 0 e 1 e o próximo valor sempre será a soma dos 2 valores anteriores (exemplo: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34...),
-///escreva um programa na linguagem que desejar onde, informado um número, ele calcule a sequência de Fibonacci e retorne uma mensagem avisando se o número informado pertence ou não a sequência.
+//*2) Dado a sequência de Fibonacci, onde se inicia por 0 e 1 e o próximo valor sempre será a soma dos 2 valores anteriores (exemplo: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34...),
+//escreva um programa na linguagem que desejar onde, informado um número, ele calcule a sequência de Fibonacci e retorne uma mensagem avisando se o número informado pertence ou não a sequência.
 
 //IMPORTANTE: Esse número pode ser informado através de qualquer entrada de sua preferência ou pode ser previamente definido no código;*/
 Console.WriteLine("2º Questão");
 
-int termos = int.Parse(Console.ReadLine());
+FibonacciRecursivo fibonacciRecursivo = new FibonacciRecursivo();
 
-int primeiro = 0, segundo = 1, prox;
+Console.WriteLine("Número para verificação:");
+int NumSequencia = int.Parse(Console.ReadLine());
+Console.WriteLine();
 
-Console.Write(primeiro + " " + segundo + " ");
+Console.WriteLine("Sequência:");
+bool Verificacao = fibonacciRecursivo.Operacao(NumSequencia);
+Console.WriteLine();
 
-for (int i = 3; i <= termos; i++)
-{
-    prox = primeiro + segundo;
-    Console.Write(prox + " ");
+Console.WriteLine($"\nO número {NumSequencia} {(Verificacao ? "pertence" : "NÃO pertence")} à sequência de Fibonacci.");
+Console.WriteLine();
 
-    primeiro = segundo;
-    segundo = prox;
-}
-Console.WriteLine(" ");
-Console.WriteLine(" ");
 
-///*3) Dado um vetor que guarda o valor de faturamento diário de uma distribuidora, faça um programa, na linguagem que desejar, que calcule e retorne:
+//*3) Dado um vetor que guarda o valor de faturamento diário de uma distribuidora, faça um programa, na linguagem que desejar, que calcule e retorne:
 //• O menor valor de faturamento ocorrido em um dia do mês;
 //• O maior valor de faturamento ocorrido em um dia do mês;
 //• Número de dias no mês em que o valor de faturamento diário foi superior à média mensal.
